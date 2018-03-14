@@ -19,17 +19,17 @@ The options:
 
 - -r, --run_id : experiment id, default = 0
 
-- -c, --cons_param : constraint parameter, default = 1
-
 - -t, --method_mode : method_mode: 0- Phylo-HMGP-BM; 1- Phylo-HMGP-OU, default = 1
 
-- -i, --initial_weight : initial weight for initial parameters, default = 0.1
+- -c, --cons_param : constraint parameter, default = 4
 
-- -j, --initial_magnitude : initial magnitude for initial parameters, default = 2
+- -i, --initial_weight : initial weight for initial parameters, default = 0.5
+
+- -j, --initial_magnitude : initial magnitude for initial parameters, default = 1
 
 - -s, --version : dataset version, default = 1
 
-Example: python phylo_hmgp.py -t 0 -n 20 -r 0 (using Phylo-HMGP-OU for estimating 20 states on the provided example data)
+Example: python phylo_hmgp.py -t 1 -n 20 -r 0 (using Phylo-HMGP-OU for estimating 20 states on the provided example data)
 
 To use Phylo-HMGP, please first complie the C source file _hmmc.c into a Python module named _hmmc. The module _hmmc is needed and imported in the file base_variant.py. A sample setup.py is provided. Please use the following commands to compile the _hmmc module:
 
