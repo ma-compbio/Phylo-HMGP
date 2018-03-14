@@ -314,103 +314,6 @@ class phyloHMM1(_BaseHMM):
 
         print "lambda_0", cons_param, n_samples, self.lambda_0*1.0/np.sqrt(n_samples)
 
-        # # tensfor flow session
-        # # self.sess = tf.Session()  
-        # self.sess = tf.InteractiveSession()
-        
-        # # input sample
-        # self.x = tf.placeholder(tf.float32, [None, self.n_features])
-        # # self.state_id = tf.placeholder(tf.int32,[])
-        # # self.sample_size = tf.placeholder(tf.int32,[])
-        
-        # # Create parameter graph 
-        # self.params_vec  = self.params_Initialization(n_components,self.branch_dim)
-
-        # self.optimizer_Configuration()
-
-        # self.covars_vec = dict()
-        # for i in range(0,n_components):
-        #     #self.state_id = i
-        #     self.covars_vec[i] = self._compute_covariance_mtx_1(i)
-
-        # # initialization of the tensorflow variables
-        # init = tf.global_variables_initializer() 
-        # self.sess.run(init)
-
-        # #params1 = self.sess.run(self.params)
-        # print self.params_vec['v_branch']
-
-        # covars_vec1 = self.sess.run((self.covars_vec))
-        # print covars_vec1[0]
-        # print covars_vec1[1]
-        
-    # # compute loss function and configure the optimizer     
-    # def optimizer_Configuration(self):
-    #     # The loss is composed of two terms:
-    #     # 1.) The reconstruction loss (the negative log probability
-    #     #     of the input under the reconstructed Bernoulli distribution 
-    #     #     induced by the decoder in the data space).
-    #     #     This can be interpreted as the number of "nats" required
-    #     #     for reconstr ucting the input when the activation in latent
-    #     #     is given.
-    #     # Adding 1e-10 to avoid evaluation of log(0.0)
-    #     # negative expected reconstruction error
-    #     # reconstr_err = -tf.reduce_sum(self.x * tf.log(1e-10 + self.x_reconstr)
-    #     #                    + (1-self.x) * tf.log(1e-10 + 1 - self.x_reconstr), 1)
-                
-    #     # KLD = 1/2*sum[1+log(sigma^2)-mu^2-sigma^2]
-    #     # KLD = -0.5*tf.reduce_sum(1 + self.z_logsigma_sq - tf.square(self.z_mu) - tf.exp(self.z_logsigma_sq), 1)
-    #     # cost function: average over the batches
-    #     # self.cost = tf.reduce_mean(reconstr_err + KLD)
- 
-    #     # Use ADAM optimizer
-    #     print "configure optimizer..."
-    #     self.optimizer = dict()
-    #     self.cost = dict()
-    #     #for state_id in range(0,self.n_components):
-    #     #    self.cost[state_id] = self._compute_log_likelihood_1(state_id)
-    #     #    self.optimizer[state_id] = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.cost[state_id])
-    #     state_id = 1
-    #     self.cost, self.inv_cv = self._compute_log_likelihood_1(state_id)
-    #     self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.cost)
-
-    # def model_fit(self, X):
-    #     # model training
-
-    #     variables_names = [v.name for v in tf.trainable_variables()]
-    #     values, cost = self.sess.run(variables_names, self.cost, feed_dict={self.x: X})
-    #     print cost
-    #     for k, v in zip(variables_names, values):
-    #         print "Variable: ", k
-    #         print "Shape: ", v.shape
-    #         print "values:", v
-
-    #     # params0 = self.sess.run(self.params)
-    #     # print params0['v_branch']
-    #     cost1, inv_cv1 = self.sess.run((self.cost, self.inv_cv), feed_dict={self.x: X})
-    #     print cost1
-    #     print inv_cv1
-
-    #     opt, cost, params = self.sess.run((self.optimizer, self.cost, self.params_vec), feed_dict={self.x: X})
-    #     params1 = self.sess.run(self.params_vec)
-
-    #     print params['v_branch']
-    #     print params1['v_branch']
-    #     print opt, cost
-    #     #print opt._lr
-
-    #     variables_names = [v.name for v in tf.trainable_variables()]
-    #     values = self.sess.run(variables_names)
-    #     for k, v in zip(variables_names, values):
-    #         print "Variable: ", k
-    #         print "Shape: ", v.shape
-    #         print "values:", v
-  
-    #     #state_id = 0
-    #     #self.branch_params[state_id] = params['v_branch'][state_id]  # update the branch params 
-
-    #     return cost, params, params1
-
     def _get_covars(self):
         """Return covars as a full matrix."""
         if self.covariance_type == 'full':
@@ -883,10 +786,6 @@ class phyloHMM1(_BaseHMM):
         c = state_id
         values = np.zeros((n2,2))   # expectation and variance
         covar_mtx = np.zeros((n1,n1))
-        # beta1, lambda1 = params1['beta'], params1['lambda']  # alpha*t, sigma^2*t
-        # beta1, lambda1 = np.insert(beta1,0,0), np.insert(lambda1,0,0)  # add a branch for the first node
-
-        # alpha, sigma, theta0, theta1 = params[0], params[1], params[2], params[3:num1]
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
         # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
@@ -904,14 +803,7 @@ class phyloHMM1(_BaseHMM):
 
         # add a branch to the first node
         beta1, lambda1, ratio1 = np.insert(beta1,0,0), np.insert(lambda1,0,0), np.insert(ratio1,0,0)
-        
-        # print p_idx
-        # print beta1
-        # print beta1_exp
-        #print lambda1
-        #print theta1
-        # print ratio1
-        
+                
         for i in range(1,n2):
             values[i,0] = values[p_idx[i],0]*beta1_exp[i] + theta1[i]*(1-beta1_exp[i])
             values[i,1] = ratio1[i]*(1-beta1_exp[i]**2) + values[p_idx[i],1]*(beta1_exp[i]**2)
@@ -932,8 +824,6 @@ class phyloHMM1(_BaseHMM):
         for i in range(0,n1):
             covar_mtx[i,i] = values[self.leaf_vec[i],1] # variance
         
-        # sigma1 = sigma**2
-        # V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         V = covar_mtx.copy()
         theta = theta1[self.leaf_vec]
         mean_values1 = values[self.leaf_vec,0]
@@ -947,10 +837,6 @@ class phyloHMM1(_BaseHMM):
 
         n_samples = self.n_samples
         lambda_0 = self.lambda_0
-        # weights_sum = stats['post'][c]
-        # lik = (self.stats['post'][c]*np.log(det(V))/n_samples
-        #         +np.sum(inv(V)*Sn_w)/n_samples
-        #         +lambda_0*np.linalg.norm(parmas))
 
         lambda_1 = 1.0/np.sqrt(n_samples)
         # lambda_1 = 1.0/(self.n_params)
@@ -972,10 +858,6 @@ class phyloHMM1(_BaseHMM):
         
         values = np.zeros((n2,2))  # expectation and variance
         covar_mtx = np.zeros((n1,n1))
-        # beta1, lambda1 = params1['beta'], params1['lambda']  # alpha*t, sigma^2*t
-        # beta1, lambda1 = np.insert(beta1,0,0), np.insert(lambda1,0,0)  # add a branch for the first node
-
-        # alpha, sigma, theta0, theta1 = params[0], params[1], params[2], params[3:num1]
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
         # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
@@ -993,14 +875,7 @@ class phyloHMM1(_BaseHMM):
 
         # add a branch to the first node
         beta1, lambda1, ratio1 = np.insert(beta1,0,0), np.insert(lambda1,0,0), np.insert(ratio1,0,0)
-        
-        # print p_idx
-        #print "beta", beta1
-        # print beta1_exp
-        #print "lambda", lambda1
-        #print "theta", theta1
-        # print ratio1
-        
+
         for i in range(1,n2):
             values[i,0] = values[p_idx[i],0]*beta1_exp[i] + theta1[i]*(1-beta1_exp[i])
             values[i,1] = ratio1[i]*(1-beta1_exp[i]**2) + values[p_idx[i],1]*(beta1_exp[i]**2)
@@ -1087,16 +962,7 @@ class phyloHMM1(_BaseHMM):
         id1 = 0
         # con1 = {'type': 'ineq', 'fun': constraint1}
         con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
-        # con2 = {'type': 'eq', 'fun': constraint2}
-        # cons = ([con1,con2])
-        # solution = minimize(objective,x0,method='SLSQP',\
-        #            bounds=bnds,constraints=con1)
-        # res = minimize(brownian_lik, initial_guess, args = (self.Sn_w[state_id], self.stats['post'][state_id],
-        #                self.base_vec, self.n_samples, self.n_features),
-        #                method=method_vec[id1], constraints=con1, tol=1e-5, options={'disp': False})
-        # res = minimize(brownian_lik, initial_guess, args = (self.Sn_w[state_id], self.stats['post'][state_id],
-        #                self.base_vec, self.n_samples, self.n_features),
-        #                constraints=con1, tol=1e-5, options={'disp': False})
+
         res = minimize(ou_lik,initial_guess,args = (self.cv_mtx, state_id,
                         self.stats, self.leaf_time, self.n_samples),
                        constraints=con1, tol=1e-5, options={'disp': False})
@@ -1118,14 +984,8 @@ class phyloHMM1(_BaseHMM):
         				+ 0.3*random1)
         print "initial guess", initial_guess
         
-        # initial_guess = 0.5*np.ones((1,self.n_params)) # using Lagrange multiplier
-        # initial_guess = self.params_vec1[state_id].copy()
-
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
-        # con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
-        #res = minimize(self._ou_lik_varied,initial_guess,args = (self.cv_mtx, state_id),
-        #               method=method_vec[id1], tol=1e-5, options={'disp': False})
         
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
         #cons = ({'type': 'ineq', 'fun': lambda x: x[0:n1]-1e-07},
@@ -1163,14 +1023,8 @@ class phyloHMM1(_BaseHMM):
                         + (1-a1-a2)*random1)
         print "initial guess", initial_guess
         
-        # initial_guess = 0.5*np.ones((1,self.n_params)) # using Lagrange multiplier
-        # initial_guess = self.params_vec1[state_id].copy()
-
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
-        # con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
-        #res = minimize(self._ou_lik_varied,initial_guess,args = (self.cv_mtx, state_id),
-        #               method=method_vec[id1], tol=1e-5, options={'disp': False})
         
         # con1 = {'type': 'ineq', 'fun': lambda x: x-1e-07}  # selection strength and variance are positive
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
@@ -1202,14 +1056,6 @@ class phyloHMM1(_BaseHMM):
         flag = np.zeros(n1)
         mean_values1[leaf_vec] = mean_values.copy()
         flag[leaf_vec] = 2
-        # for j in range(0,n2):
-        # 	id1 = leaf_vec[j]
-        # 	p_id1 = self.p_idx[id1]
-        # 	if flag[p_id1]==0:
-        # 		mean_values1[p_id1] = mean_values[j]
-        # 		flag[p_id1] += 1
-        # 	elif flag[p_id1]==1:
-        # 		mean_values1[p_id1] = 0.5*mean_values1[p_id1]+0.5*mean_values[j]
 
         for j in range(n1-1,0,-1):
         	p_id1 = p_idx[j]
@@ -1234,8 +1080,7 @@ class phyloHMM1(_BaseHMM):
 
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
         # con1 = {'type': 'ineq', 'fun': lambda x: x-1e-07}  # selection strength and variance are positive
-        #cons = ({'type': 'ineq', 'fun': lambda x: x[0:n1]-1e-07},
-        #        {'type': 'ineq', 'fun': lambda x: x[0:-10]-1e-07})
+
         res = minimize(self._ou_lik_varied_single, initial_guess, args = (X),
         				constraints=con1, tol=1e-6, options={'disp': False})
 
@@ -1346,10 +1191,9 @@ class phyloHMM1(_BaseHMM):
         return covar_mtx.copy(), mean_values1.copy()
 
     def _load_simu_parameters(self, filename1):
-        # filename3 = "/home/yy3/data1/replication_timing/hmmseg/vbak2/em/init1_%d.mat"%(n_components1)
+
         simu_params = scipy.io.loadmat(filename1)
 
-        # start_prob, transmat, branch_param = simu_params['startprob'], simu_params['transmat'], simu_params['branch_param']
         start_prob, equili_prob, transmat, branch_param = simu_params['startprob'], simu_params['equiliprob'], simu_params['transmat'], simu_params['branch_param']
         print branch_param.shape
         # print start_prob, transmat
@@ -1798,13 +1642,11 @@ class phyloHMM(_BaseHMM):
         params = self.branch_params[state_id].copy()
         pre_params, n_params = params.copy(), self.branch_dim
         flags = []
-        # pre_value = self._compute_log_likelihood_2(pre_params, state_id)
+
         derivative, pre_value, cv = self._directional_derivative(params,state_id)
         cnt, cnt1, cnt_limit1, cnt_limit2, cnt_limit3 = 0, 0, 3, 3, 1000
         print pre_value
-        # cv = self._compute_covariance_mtx_2(params, state_id)
-        # derivative = self._directional_derivative(params,state_id, X)
-        # print params, cv, inv(cv), derivative
+
         while cnt<cnt_limit1 and iteration<cnt_limit3:
             # derivative, value = self._directional_derivative(params,state_id, X)
             delta1 = params-pre_params
@@ -1829,8 +1671,6 @@ class phyloHMM(_BaseHMM):
                 step = self._line_search(params, derivative, state_id)
                 update = step*derivative
             
-            #step = self._line_search(params, derivative, state_id, X)
-            #step1, update = step, step*derivative
             flags.append(flag)
             params = params - update  # update the gradient
             d1 = params[1:]-pre_params[1:] # starting from children of the root node
@@ -1855,11 +1695,7 @@ class phyloHMM(_BaseHMM):
     def _directional_derivative(self, params, state_id):
         
         n_params, n_samples, n_features, base_vec = self.branch_dim, self.n_samples, self.n_features, self.base_vec
-        # self.mean[state_id] = np.mean(X,axis=0)
-        #x1 = X-self.mean[state_id]
-        #weights = self.posteriors[:,state_id]
-        #weighted_x1 = x1*np.matmul(np.reshape(weights,(n_samples,1)),np.ones((1,n_features)))
-        #Sn = np.matmul(x1.T,weighted_x1)
+
         Sn = self.Sn_w[state_id]
         weights_sum = self.stats['post'][state_id]
         mtx_vec = [None]*n_params
@@ -1882,10 +1718,6 @@ class phyloHMM(_BaseHMM):
         
         params, param_dim, n_samples, n_features, base_vec = self.branch_params, self.branch_dim, self.n_samples, self.n_features, self.base_vec
 
-        # self.mean[state_id] = np.mean(X,axis=0)
-        #x1 = X-self.mean[state_id]
-        #weights = self.posteriors[:,state_id]
-        #weighted_x1 = x1*np.matmul(np.reshape(weights,(n_samples,1)),np.ones((1,n_features)))
         Sn = self.Sn_w[state_id]
         weights_sum = self.stats['post'][state_id]
         mtx_vec = [None]*n_params
