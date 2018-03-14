@@ -141,7 +141,6 @@ def ou_lik1(params, cv, state_id, stats, T, n_samples):
         w1 = stats['post'][c]/n_samples
         sigma1 = q1/(w1*d)
         sigma = np.sqrt(sigma1)
-        # lik = w1*d*np.log(sigma1)+w1*np.log(det(V1))+lambda1*(theta-m1)
         V = sigma**2*V1
         lik = w1*d*np.log(sigma1)+w1*np.log(det(V1))+np.sum(inv(V)*Sn_w)/n_samples
 
@@ -176,7 +175,6 @@ def brownian_lik1(params, state_id, stats, mean_value, base_vec, n_samples, n_fe
         
         # weights_sum = stats['post'][c]
         lik = stats['post'][c]*np.log(det(cv))/n_samples+np.sum(inv(cv)*Sn_w)/n_samples
-        # lik = stats['post'][c]*np.log(det(V))/n_samples+np.matrix.trace(np.matmul(Sn_w,inv(V)))/n_samples
 
         return lik
 
@@ -219,7 +217,6 @@ class phyloHMM1(_BaseHMM):
         self.observation = observation
         print "data loaded", self.observation.shape
         
-        # self.n_samples, self.n_features = observation.shape
         self.n_samples = n_samples
         self.n_features = n_features
         self.n_components = n_components
@@ -228,7 +225,6 @@ class phyloHMM1(_BaseHMM):
         self.tree_mtx, self.node_num = self._initilize_tree_mtx(edge_list)
 
         self.branch_params = branch_list
-        # self.branch_dim = len(branch_list)
         self.branch_dim = self.node_num - 1   # number of branches
         
         self.n_params = self.node_num + self.branch_dim*2 + 1  # optimal values (n1), selection strength and variance (n2*2), variance of root node
@@ -315,9 +311,6 @@ class phyloHMM1(_BaseHMM):
 
         _validate_covars(self._covars_, self.covariance_type,
                          self.n_components)
-
-    #def _validate_covars_linear(self._covars_, self.covariance_type,
-    #                     self.n_components):
 
     # initialize the parameters of the multiple OU models
     def _init_ou_param(self, X, init_label, mean_values):
@@ -529,8 +522,6 @@ class phyloHMM1(_BaseHMM):
         cv, n_samples = self._compute_covariance_mtx_2(params), self.n_samples
         inv_cv = inv(cv)
         weights_sum = self.stats['post'][state_id]
-        #Sn = self.Sn_w[state_id]/n_samples
-        #likelihood = weights_sum*np.log(det(cv))/n_samples+np.matrix.trace(np.matmul(Sn,inv_cv))
 
         T = cv[0,0]
         a1 = 2.0*alpha
@@ -822,7 +813,6 @@ class phyloHMM1(_BaseHMM):
         covar_mtx = np.zeros((n1,n1))
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
-        # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
         params1 = params[1:]
         beta1, lambda1, theta1 = params1[0:num1], params1[num1:2*num1], params1[2*num1:3*num1+1]
 
