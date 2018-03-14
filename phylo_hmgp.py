@@ -84,9 +84,7 @@ def ou_lik(params, cv, state_id, stats, T, n_samples):
         alpha, sigma, theta0, theta1 = params[0], params[1], params[2], params[3:]
         # T = self.leaf_time
         a1 = 2.0*alpha
-        
-        # sigma1 = sigma**2
-        # V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
+
         V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
         # print theta0, theta1, theta
@@ -100,7 +98,6 @@ def ou_lik(params, cv, state_id, stats, T, n_samples):
 
         # weights_sum = stats['post'][c]
         lik = stats['post'][c]*np.log(det(V))/n_samples+np.sum(inv(V)*Sn_w)/n_samples
-        # lik = stats['post'][c]*np.log(det(V))/n_samples+np.matrix.trace(np.matmul(Sn_w,inv(V)))/n_samples
 
         return lik
 
@@ -113,8 +110,7 @@ def ou_lik1(params, cv, state_id, stats, T, n_samples):
         
         # sigma1 = sigma**2
         V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
-        # V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
-        # V = sigma**2*V1
+
         s1 = np.exp(-alpha*T)
         # print theta0, theta1, theta
         theta = theta0*s1+theta1*(1-s1)
@@ -129,9 +125,7 @@ def ou_lik1(params, cv, state_id, stats, T, n_samples):
 
         # denom = stats['post'][c]
         denom = stats['post'][:, np.newaxis]
-        # weights_sum = stats['post'][c]
-        #     self.means_ = ((means_weight * means_prior + stats['obs'])
-        #                    / (means_weight + denom))
+
         mean_value = (stats['obs']/denom)
         m1 = mean_value[c]
         print "m1", m1
@@ -150,12 +144,6 @@ def ou_lik1(params, cv, state_id, stats, T, n_samples):
         # lik = w1*d*np.log(sigma1)+w1*np.log(det(V1))+lambda1*(theta-m1)
         V = sigma**2*V1
         lik = w1*d*np.log(sigma1)+w1*np.log(det(V1))+np.sum(inv(V)*Sn_w)/n_samples
-        # lik = theta
-        # lik = w1*d*np.log(sigma1)+w1*np.log(det(V1))
-
-        # weights_sum = stats['post'][c]
-        # lik = stats['post'][c]*np.log(det(V))/n_samples+np.sum(inv(V)*Sn_w)/n_samples
-        # lik = stats['post'][c]*np.log(det(V))/n_samples+np.matrix.trace(np.matmul(Sn_w,inv(V)))/n_samples
 
         return lik
 
@@ -167,10 +155,7 @@ def brownian_lik(params, Sn_w, weighted_sum, base_vec, n_samples, n_features):
             cv += branch_param*base_vec[i]
             i += 1
         
-        # weighted_sum = stats['post'][c]
-        # lik = stats['post'][c]*np.log(det(cv))/n_samples+np.sum(inv(cv)*Sn_w)/n_samples
         lik = weighted_sum*np.log(det(cv))/n_samples+np.sum(inv(cv)*Sn_w)/n_samples
-        # lik = stats['post'][c]*np.log(det(cv))/n_samples+np.matrix.trace(np.matmul(Sn_w,inv(cv)))/n_samples
 
         return lik
 
@@ -241,32 +226,21 @@ class phyloHMM1(_BaseHMM):
         self.learning_rate = learning_rate
 
         self.tree_mtx, self.node_num = self._initilize_tree_mtx(edge_list)
-        # self.branch_dim, self.n_params = self.node_num, self.node_num
-        # self.branch_params = 2*np.ones((n_components,self.branch_dim))+0*np.random.rand(n_components,self.branch_dim)
-        # self.branch_params = np.ones((n_components, self.node_num))
+
         self.branch_params = branch_list
         # self.branch_dim = len(branch_list)
         self.branch_dim = self.node_num - 1   # number of branches
-        # self.n_params = self.n_features + 3   # number of parameters: (alpha,sigma^2,theta0,theta1)
-        # self.node_num = self.branch_dim + 1
-        # self.node_num = self.branch_dim + 1
         
         self.n_params = self.node_num + self.branch_dim*2 + 1  # optimal values (n1), selection strength and variance (n2*2), variance of root node
         
-        self.params_vec1 = np.random.rand(n_components, self.n_params) # this needs to be updated
-        # changed 12-30-17
-        # self.params_vec1 = 2*np.random.rand(n_components, self.n_params)-1 # this needs to be updated
-        # self.params_vec1[:,0:-self.node_num] = np.random.rand(n_components, self.n_params-self.node_num) # this needs to be updated
+        self.params_vec1 = np.random.rand(n_components, self.n_params)
 
         self.init_ou_params = self.params_vec1.copy()
 
         print "branch dim", self.branch_dim
         print "number of parameters", self.n_params
-        # self.branch_vec = [None]*self.node_num
-        # self.branch_vec = [None]*self.node_num
+
         self.branch_vec = [None]*self.node_num  # all the leaf nodes that can be reached from a node
-        # self.branch_vec = [None]*self.node_num
-        # self.params_vec1 = np.random.rand(n_components, self.n_params) # this needs to be updated
 
         self.base_struct = [None]*self.node_num
         print "compute base struct"
@@ -278,8 +252,6 @@ class phyloHMM1(_BaseHMM):
         self.leaf_time = branch_list[0]+branch_list[1]  # this needs to be updated
         self.leaf_vec = self._search_leaf()  # search for the leaves of the tree
         self.path_vec = self._search_ancestor()
-
-        # self.cv = np.zeros((self.n_features, self.n_features))
 
         mtx = np.zeros((n_features,n_features))
         print "initilization, branch parameters", self.branch_params
@@ -299,8 +271,6 @@ class phyloHMM1(_BaseHMM):
         # self.posteriors = posteriors/(np.reshape(den1,(self.n_samples,1))*np.ones((1,n_components)))
         self.posteriors = np.ones((self.n_samples,n_components))    # for testing
         self.mean = np.random.rand(n_components, self.n_features)   # for testing
-        #self.mean = tf.placeholder(tf.float32, [n_components, self.n_features])
-        # self.Sn_w = np.zeros((self.n_components, self.n_features, self.n_features))
         
         self.stats = dict()
         self.counter = 0
@@ -706,10 +676,6 @@ class phyloHMM1(_BaseHMM):
         c = state_id
         values = np.zeros((n2,2))  # expectation and variance
         covar_mtx = np.zeros((n1,n1))
-        # beta1, lambda1 = params1['beta'], params1['lambda']  # alpha*t, sigma^2*t
-        # beta1, lambda1 = np.insert(beta1,0,0), np.insert(lambda1,0,0)  # add a branch for the first node
-
-        # alpha, sigma, theta0, theta1 = params[0], params[1], params[2], params[3:num1]
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
         # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
@@ -730,11 +696,7 @@ class phyloHMM1(_BaseHMM):
         
         # print p_idx
         print beta1
-        # print beta1_exp
-        #print lambda1
-        #print theta1
-        # print ratio1
-        
+
         for i in range(1,n2):
             values[i,0] = values[p_idx[i],0]*beta1_exp[i] + theta1[i]*(1-beta1_exp[i])
             values[i,1] = ratio1[i]*(1-beta1_exp[i]**2) + values[p_idx[i],1]*(beta1_exp[i]**2)
@@ -901,19 +863,11 @@ class phyloHMM1(_BaseHMM):
         V = covar_mtx.copy()
         mean_values1 = values[self.leaf_vec,0]
         n = obs.shape[0]
-        # obsmean = np.outer(self.stats['obs'][c], theta)
-        # obsmean = np.outer(n, mean_values1)
+
         obsmean = np.outer(np.mean(obs,axis=0),mean_values1)
-        # obs1 = obs-mean_values1
-        # print covar_mtx
-        # print values
 
         Sn_w = np.dot(obs.T,obs)/n - obsmean - obsmean.T + np.outer(mean_values1, mean_values1)
 
-        # print Sn_w
-        # print V
-
-        # weights_sum = stats['post'][c]
         lik = np.log(det(V))+np.sum(inv(V)*Sn_w)
 
         self.values = values.copy()
@@ -929,8 +883,6 @@ class phyloHMM1(_BaseHMM):
         T = self.leaf_time
         a1 = 2.0*alpha
         
-        # sigma1 = sigma**2
-        # V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
         # print theta0, theta1, theta
@@ -954,9 +906,6 @@ class phyloHMM1(_BaseHMM):
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
-        # res = minimize(ou_lik,initial_guess,args = (self.cv_mtx, state_id,
-        #                 self.stats, self.leaf_time, self.n_samples),
-        #                method=method_vec[id1], tol=1e-5, options={'disp': False})
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','COBYLA','Nelder-Mead','Newton-CG']
         id1 = 0
@@ -973,7 +922,6 @@ class phyloHMM1(_BaseHMM):
 
     def _ou_optimize1(self, state_id):
         
-        # initial_guess = 1*np.random.rand(self.n_params)
         a1, a2 = 0.35, 0.35
         n1 = self.node_num
 
@@ -988,8 +936,6 @@ class phyloHMM1(_BaseHMM):
         id1 = 0
         
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
-        #cons = ({'type': 'ineq', 'fun': lambda x: x[0:n1]-1e-07},
-        #        {'type': 'ineq', 'fun': lambda x: x[0:-10]-1e-07})
         res = minimize(self._ou_lik_varied, initial_guess, args = (state_id),
                        constraints=con1, tol=1e-6, options={'disp': False})
 
@@ -1013,11 +959,6 @@ class phyloHMM1(_BaseHMM):
         else:
             random1 = w2*np.random.rand(self.n_params)
         
-        # initial_guess = (a1*self.init_ou_params[state_id].copy() 
-        #                 + a2*self.params_vec1[state_id].copy()
-        #                 + (1-a1-a2)*random1)
-        #a1 = 0.2
-        #a2 = 0.0
         initial_guess = (a1*self.init_ou_params[state_id].copy() 
                         + a2*self.params_vec1[state_id].copy()
                         + (1-a1-a2)*random1)
@@ -1026,7 +967,6 @@ class phyloHMM1(_BaseHMM):
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
         
-        # con1 = {'type': 'ineq', 'fun': lambda x: x-1e-07}  # selection strength and variance are positive
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
 
         res = minimize(self._ou_lik_varied_constraint, initial_guess, args = (state_id),
@@ -1045,14 +985,11 @@ class phyloHMM1(_BaseHMM):
         print "p_idx", p_idx
         print "leaf_vec", leaf_vec
         
-        # mean_values1[leaf_vec] = mean_values.copy()
         n2 = leaf_vec.shape[0]
 
         n1 = self.node_num
         mean_values1 = np.zeros(n1)
-        # for i in range(0,n2):
-        	# p_idx = leaf_vec[i]	# parent of leaf
-        
+
         flag = np.zeros(n1)
         mean_values1[leaf_vec] = mean_values.copy()
         flag[leaf_vec] = 2
@@ -1069,17 +1006,11 @@ class phyloHMM1(_BaseHMM):
         initial_guess[self.n_params-n1:self.n_params] = mean_values1.copy() # initialize the mean values
 
         print "initial guess", initial_guess
-        # initial_guess = 0.5*np.ones((1,self.n_params)) # using Lagrange multiplier
-        # initial_guess = self.params_vec1[state_id].copy()
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
-        # con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
-        #res = minimize(self._ou_lik_varied,initial_guess,args = (self.cv_mtx, state_id),
-        #               method=method_vec[id1], tol=1e-5, options={'disp': False})
 
         con1 = {'type': 'ineq', 'fun': lambda x: x[0:-n1]-1e-07}  # selection strength and variance are positive
-        # con1 = {'type': 'ineq', 'fun': lambda x: x-1e-07}  # selection strength and variance are positive
 
         res = minimize(self._ou_lik_varied_single, initial_guess, args = (X),
         				constraints=con1, tol=1e-6, options={'disp': False})
@@ -1109,9 +1040,6 @@ class phyloHMM1(_BaseHMM):
 
         if 'c' in self.params:
             print "flag: true covariance"
-            # covars_prior = self.covars_prior
-            # covars_weight = self.covars_weight
-            # meandiff = self.means_ - means_prior
 
             for c in range(self.n_components):
                 print "state_id: %d"%(c)
@@ -1126,14 +1054,10 @@ class phyloHMM1(_BaseHMM):
                 self._covars_[c] = self.cv_mtx.copy()+self.min_covar*np.eye(self.n_features) 
 
         print self.params_vec1
-        #print self.means_
-        #print self._covars_
+
         for c in range(self.n_components):
             print("%.4f\t")%(det(self._covars_[c]))
         print("\n")
-
-        # print self.startprob_
-        # print self.transmat_
 
     def _compute_covariance_mtx_varied(self, params):
         n1, n2 = self.leaf_vec.shape[0], self.node_num  # number of leaf nodes, number of nodes
@@ -1409,9 +1333,6 @@ class phyloHMM(_BaseHMM):
 
         _validate_covars(self._covars_, self.covariance_type,
                          self.n_components)
-
-    #def _validate_covars_linear(self._covars_, self.covariance_type,
-    #                     self.n_components):
 
     def _init(self, X, lengths=None):
         super(phyloHMM, self)._init(X, lengths=lengths)
@@ -1759,7 +1680,6 @@ class phyloHMM(_BaseHMM):
     def _brownian_optimize(self, state_id):
         
         initial_guess = self.initial_w2*np.random.rand(1,self.n_params)
-        # initial_guess = self.params_vec1[state_id].copy()
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','COBYLA','Nelder-Mead','Newton-CG']
         id1 = 0
