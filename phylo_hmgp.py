@@ -16,6 +16,18 @@ from sklearn.utils import check_random_state
 from base_variant import _BaseHMM
 from utils import iter_from_X_lengths, normalize
 
+import numpy as np
+from scipy.misc import logsumexp
+from sklearn import cluster
+from sklearn.mixture import (
+    sample_gaussian,
+    log_multivariate_normal_density,
+    distribute_covar_matrix_to_match_covariance_type, _validate_covars)
+from sklearn.utils import check_random_state
+
+from base_variant import _BaseHMM
+from utils import iter_from_X_lengths, normalize
+
 import pandas as pd
 import numpy as np
 import os
@@ -24,44 +36,13 @@ import math
 import random
 import scipy
 import scipy.io
-import tensorflow as tf
-
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
-import theano
-import theano.tensor as T
-from theano.compile.nanguardmode import NanGuardMode
-
-import lasagne
-from lasagne import nonlinearities
-from lasagne import init
-from lasagne.utils import unroll_scan
-
-from lasagne.layers.base import MergeLayer, Layer
-from lasagne.layers.input import InputLayer
-from lasagne.layers.dense import DenseLayer
-from lasagne.layers import helper
-
-from lasagne.layers.recurrent import Gate
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-from lasagne.random import get_rng
 
 from numpy.linalg import inv, det, norm
-
-import hmmlearn
-from hmmlearn import hmm
 from scipy.optimize import minimize
 
-import pickle
-
 from optparse import OptionParser
-
 import os.path
-
 import warnings
-
 
 __all__ = ["PhyloHMM", "GMMHMM", "GaussianHMM", "MultinomialHMM"]
 
