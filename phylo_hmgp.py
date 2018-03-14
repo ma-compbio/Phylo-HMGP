@@ -13,7 +13,7 @@ from sklearn.mixture import (
     distribute_covar_matrix_to_match_covariance_type, _validate_covars)
 from sklearn.utils import check_random_state
 
-from base1 import _BaseHMM
+from base_variant import _BaseHMM
 from utils import iter_from_X_lengths, normalize
 
 import pandas as pd
