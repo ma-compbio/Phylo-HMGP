@@ -1,13 +1,6 @@
-# Hidden Markov Models
-#
-# Author: Ron Weiss <ronweiss@gmail.com>
-#         Shiqiao Du <lucidfrontier.45@gmail.com>
-# API changes: Jaques Grobler <jaquesgrobler@gmail.com>
-# Modifications to create of the HMMLearn module: Gael Varoquaux
-# More API changes: Sergei Lebedev <superbobry@gmail.com>
 
 """
-The :mod:`hmmlearn.hmm` module implements hidden Markov models.
+Devoloped using hmmlearn
 """
 
 import numpy as np
@@ -505,14 +498,10 @@ class phyloHMM1(_BaseHMM):
 
     # compute covariance matrix for a state
     def _compute_covariance_mtx_2(self, params):
-        # cv1 = self._covars_     # covariance matrix
-        # branch_dim, n_features = self.branch_dim, self.n_features
         mtx = self.cv_mtx
         T = self.leaf_time
         alpha, sigma = params[0], params[1]
         a1 = 2.0*alpha
-        # mtx1 = np.exp(-a1*(T-cv))
-        # mtx2 = 1-np.exp(-a1*cv
         sigma1 = sigma**2
         cv = sigma**2/a1*np.exp(-a1*(T-mtx))*(1-np.exp(-a1*mtx))
 
@@ -525,8 +514,6 @@ class phyloHMM1(_BaseHMM):
 
         T = cv[0,0]
         a1 = 2.0*alpha
-        # mtx1 = np.exp(-a1*(T-cv))
-        # mtx2 = 1-np.exp(-a1*cv
         sigma1 = sigma**2
         V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
@@ -565,7 +552,6 @@ class phyloHMM1(_BaseHMM):
                 + np.outer(theta, theta)*self.stats['post'][c])
 
         n_samples = self.n_samples
-        # weights_sum = stats['post'][c]
         lik = self.stats['post'][c]*np.log(det(V))/n_samples+np.sum(inv(V)*Sn_w)/n_samples
 
         return lik
@@ -669,7 +655,6 @@ class phyloHMM1(_BaseHMM):
         covar_mtx = np.zeros((n1,n1))
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
-        # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
         params1 = params[1:]
         beta1, lambda1, theta1 = params1[0:num1], params1[num1:2*num1], params1[2*num1:3*num1+1]
 
@@ -741,7 +726,6 @@ class phyloHMM1(_BaseHMM):
         covar_mtx = np.zeros((n1,n1))
 
         num1 = self.branch_dim  # number of branches; assign parameters to each of the branches
-        # alpha, sigma, theta1 = params[0:num1], params[num1:2*num1], params1[2*num1:3*num1+1]
         params1 = params[1:]
         beta1, lambda1, theta1 = params1[0:num1], params1[num1:2*num1], params1[2*num1:3*num1+1]
 
@@ -780,7 +764,6 @@ class phyloHMM1(_BaseHMM):
         V = covar_mtx.copy()
         theta = theta1[self.leaf_vec]
         mean_values1 = values[self.leaf_vec,0]
-        # obsmean = np.outer(self.stats['obs'][c], theta)
         obsmean = np.outer(self.stats['obs'][c], mean_values1)
         # print covar_mtx, theta
 
@@ -792,7 +775,6 @@ class phyloHMM1(_BaseHMM):
         lambda_0 = self.lambda_0
 
         lambda_1 = 1.0/np.sqrt(n_samples)
-        # lambda_1 = 1.0/(self.n_params)
         lik = (self.stats['post'][c]*np.log(det(V))/n_samples
                 +np.sum(inv(V)*Sn_w)/n_samples
                 +lambda_0*lambda_1*np.dot(params.T,params))
@@ -899,7 +881,6 @@ class phyloHMM1(_BaseHMM):
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','COBYLA','Nelder-Mead','Newton-CG']
         id1 = 0
-        # con1 = {'type': 'ineq', 'fun': constraint1}
         con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
 
         res = minimize(ou_lik,initial_guess,args = (self.cv_mtx, state_id,
@@ -1023,8 +1004,6 @@ class phyloHMM1(_BaseHMM):
         # Based on Huang, Acero, Hon, "Spoken Language Processing",
         # p. 443 - 445
         denom = stats['post'][:, np.newaxis]
-        #self._output_stats(self.counter)
-        #self.counter += 1
 
         print denom
 
@@ -1500,7 +1479,6 @@ class phyloHMM(_BaseHMM):
 
     # compute covariance matrix for a state
     def _compute_covariance_mtx_2alt(self, state_id):
-        #cv1 = self._covars_     # covariance matrix
         num = self.n_features
         branch_params, index = self.branch_params[state_id], self.index_list
         cv = np.zeros((num,num))
@@ -1707,8 +1685,6 @@ class phyloHMM(_BaseHMM):
         # Based on Huang, Acero, Hon, "Spoken Language Processing",
         # p. 443 - 445
         denom = stats['post'][:, np.newaxis]
-        #self._output_stats(self.counter)
-        #self.counter += 1
 
         print denom
         if 'm' in self.params:
