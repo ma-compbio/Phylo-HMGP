@@ -299,7 +299,7 @@ class phyloHMM1(_BaseHMM):
                 print "empty cluster!"
             else:
                 x1 = X[b]
-                print "number in the cluster", x1.shape[0]
+                # print "number in the cluster", x1.shape[0]
                 cur_param, lik = self._ou_optimize_init(x1, mean_values[i])
                 init_ou_params[i,:] = cur_param.copy()
 
@@ -471,10 +471,6 @@ class phyloHMM1(_BaseHMM):
                 cv[id1[1],id1[0]] = 1  # symmetric matrix
             base_vec[i] = cv
 
-        for i in range(0,num1):
-            filename = "base_mtx_%d"%(i)
-            np.savetxt(filename, base_vec[i], fmt='%d', delimiter='\t')
-
         return base_vec
 
     # compute covariance matrix for a state
@@ -619,12 +615,6 @@ class phyloHMM1(_BaseHMM):
 
                 cnt += 1
 
-        print pair_list
-        filename = "ou_A1.txt"
-        np.savetxt(filename, A1, fmt='%d', delimiter='\t')
-        filename = "ou_A2.txt"
-        np.savetxt(filename, A2, fmt='%d', delimiter='\t')
-
         return A1, A2, pair_list, parent_list
     
     def _ou_lik_varied(self, params, state_id):
@@ -694,7 +684,7 @@ class phyloHMM1(_BaseHMM):
         self.values = values.copy()
         self.cv_mtx = covar_mtx.copy()
 
-        print "likelihood", state_id, lik
+        # print "likelihood", state_id, lik
 
         return lik
 
@@ -763,7 +753,7 @@ class phyloHMM1(_BaseHMM):
         self.values = values.copy()
         self.cv_mtx = covar_mtx.copy()
 
-        print "likelihood", state_id, lik
+        # print "likelihood", state_id, lik
 
         return lik
 
@@ -826,7 +816,7 @@ class phyloHMM1(_BaseHMM):
         self.values = values.copy()
         self.cv_mtx = covar_mtx.copy()
 
-        print "likelihood", lik
+        # print "likelihood", lik
 
         return lik
 
@@ -882,7 +872,7 @@ class phyloHMM1(_BaseHMM):
         initial_guess = (a1*self.init_ou_params[state_id].copy() 
         				+ a2*self.params_vec1[state_id].copy()
         				+ 0.3*random1)
-        print "initial guess", initial_guess
+        # print "initial guess", initial_guess
         
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
@@ -914,7 +904,7 @@ class phyloHMM1(_BaseHMM):
         initial_guess = (a1*self.init_ou_params[state_id].copy() 
                         + a2*self.params_vec1[state_id].copy()
                         + (1-a1-a2)*random1)
-        print "initial guess", initial_guess
+        # print "initial guess", initial_guess
         
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
@@ -934,8 +924,8 @@ class phyloHMM1(_BaseHMM):
         initial_guess = self.initial_w2*np.random.rand(self.n_params)
         p_idx = self.parent_list
         leaf_vec = self.leaf_vec
-        print "p_idx", p_idx
-        print "leaf_vec", leaf_vec
+        # print "p_idx", p_idx
+        # print "leaf_vec", leaf_vec
         
         n2 = leaf_vec.shape[0]
 
@@ -957,7 +947,7 @@ class phyloHMM1(_BaseHMM):
 
         initial_guess[self.n_params-n1:self.n_params] = mean_values1.copy() # initialize the mean values
 
-        print "initial guess", initial_guess
+        # print "initial guess", initial_guess
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
@@ -979,35 +969,23 @@ class phyloHMM1(_BaseHMM):
         means_prior = self.means_prior
         means_weight = self.means_weight
 
-        print "M_step"
+        # print "M_step"
         # TODO: find a proper reference for estimates for different
         #       covariance models.
         # Based on Huang, Acero, Hon, "Spoken Language Processing",
         # p. 443 - 445
         denom = stats['post'][:, np.newaxis]
 
-        print denom
-
         if 'c' in self.params:
-            print "flag: true covariance"
 
             for c in range(self.n_components):
-                print "state_id: %d"%(c)
                 params, value = self._ou_optimize2(c)
-                print params
-                print value
                 self.lik = value
                 self.params_vec1[c] = params.copy()
 
                 theta = self.values[self.leaf_vec,0]
                 self.means_[c] = theta.copy()
                 self._covars_[c] = self.cv_mtx.copy()+self.min_covar*np.eye(self.n_features) 
-
-        print self.params_vec1
-
-        for c in range(self.n_components):
-            print("%.4f\t")%(det(self._covars_[c]))
-        print("\n")
 
     def _compute_covariance_mtx_varied(self, params):
         n1, n2 = self.leaf_vec.shape[0], self.node_num  # number of leaf nodes, number of nodes
@@ -1680,7 +1658,7 @@ class phyloHMM(_BaseHMM):
             meandiff = self.means_ - means_prior
 
             for c in range(self.n_components):
-                print "state_id: %d"%(c)
+                # print "state_id: %d"%(c)
                 obsmean = np.outer(stats['obs'][c], self.means_[c])
                 self.Sn_w[c] = (means_weight * np.outer(meandiff[c],meandiff[c]) 
                              + stats['obs*obs.T'][c]
@@ -1691,8 +1669,8 @@ class phyloHMM(_BaseHMM):
                 # params, value, cv = self._gradient_descent(c)
                 params, value, cv = self._brownian_optimize(c)
 
-                print params 
-                print value
+                # print params 
+                # print value
                 self.branch_params[c] = params.copy()
                 self._covars_[c] = cv.copy()+self.min_covar*np.eye(self.n_features)
 
@@ -2005,7 +1983,7 @@ def parse_args():
     return opts
 
 def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_name,
-        sort_states,run_id1,cons_param,method_mode,initial_mode,initial_weight,initial_weight1,initial_magnitude, simu_version):
+        sort_states,run_id1,cons_param,method_mode,initial_mode,initial_weight,initial_weight1,initial_magnitude, version):
     
      # load the edge list
     filename2 = "input_example/edge.1.txt"    
@@ -2024,11 +2002,13 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
         branch_list = branch_list[0]
         print branch_list
 
-    learning_rate = 0.001
+    learning_rate=0.001
     run_id = int(run_id1)
     n_components1 = int(num_states)
     cons_param = float(cons_param)
+    initial_mode = int(initial_mode)
     initial_weight = float(initial_weight)
+    initial_weight1 = float(initial_weight1)
     initial_magnitude = float(initial_magnitude)
     method_mode = int(method_mode)
     version = int(version)
@@ -2051,7 +2031,6 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
     for i in range(0,base_num):
         x2[:,i] = x1[:,base_num-1-i]
 
-    # x = np.log(x)
     x = x2.copy()
     print x.shape
     print x[0]
@@ -2059,28 +2038,24 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
     len_vec = np.loadtxt(filename2,dtype='int32',delimiter='\t')
     print sum(len_vec)
 
-    path_1 = ""  # please define the output directory
+    x1 = np.loadtxt(filename1, dtype='float', delimiter='\t')
 
-    learning_rate=0.001
-    run_id = int(run_id1)
-    n_components1 = int(num_states)
-    cons_param = float(cons_param)
-    simu_version = int(simu_version)
-    cons_param = float(cons_param)
-    initial_mode = int(initial_mode)
-    initial_weight = float(initial_weight)
-    initial_weight1 = float(initial_weight1)
-    initial_magnitude = float(initial_magnitude)
-    method_mode = int(method_mode)
+    print "samples loaded"
+    print x.shape
 
-    annot = "phylo-hmgp"
+    path_1 = "output"  # please define the output directory
+
+    annot = "phly-hmgp"
+    print method_mode
     
     if not os.path.exists(path_1):
         try:
             os.makedirs(path_1)
         except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise    
+            print("There was an error in making the directory!")
+            sys.exit()
+            #if e.errno != errno.EEXIST:
+            #   raise    
 
     if method_mode==0:
         tree1 = phyloHMM(n_components=n_components1, run_id=run_id, n_samples = x.shape[0], n_features = x.shape[1], 
@@ -2138,6 +2113,6 @@ if __name__ == '__main__':
     opts = parse_args()
     run(opts.hmm,opts.num_states,opts.filename,opts.length,opts.root_path,opts.multiple,\
         opts.species_name,opts.sort_states,opts.run_id,opts.cons_param, opts.method_mode, \
-        opts.initial_mode, opts.initial_weight, opts.initial_weight1, opts.initial_magnitude, opts.simu_version)
+        opts.initial_mode, opts.initial_weight, opts.initial_weight1, opts.initial_magnitude, opts.version)
 
 

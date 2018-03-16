@@ -492,8 +492,8 @@ class _BaseHMM(BaseEstimator):
 
 			# XXX must be before convergence check, because otherwise
 			#     there won't be any updates for the case ``n_iter=1``.
-			print("Maximization...")
-			print(iter)
+			#print("Maximization...")
+			#print(iter)
 			self._do_mstep(stats)
 
 			self.monitor_.report(curr_logprob)
@@ -703,5 +703,5 @@ class _BaseHMM(BaseEstimator):
 			self.transmat_ = np.where(self.transmat_ == 0.0,
 									  self.transmat_, transmat_)
 			normalize(self.transmat_, axis=1)
-			print("updating transmat")
-			print(self.transmat_)
+			#print("updating transmat")
+			#print(self.transmat_)
