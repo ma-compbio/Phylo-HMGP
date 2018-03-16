@@ -2073,7 +2073,7 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
     initial_magnitude = float(initial_magnitude)
     method_mode = int(method_mode)
 
-    annot = "phly-hmgp"
+    annot = "phylo-hmgp"
     
     if not os.path.exists(path_1):
         try:
