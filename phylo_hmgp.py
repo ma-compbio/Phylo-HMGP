@@ -56,12 +56,10 @@ def weight_init(shape):
 def ou_lik(params, cv, state_id, stats, T, n_samples):
         
         alpha, sigma, theta0, theta1 = params[0], params[1], params[2], params[3:]
-        # T = self.leaf_time
         a1 = 2.0*alpha
 
         V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
-        # print theta0, theta1, theta
         theta = theta0*s1+theta1*(1-s1)
         c = state_id
         obsmean = np.outer(stats['obs'][c], theta)
@@ -78,12 +76,9 @@ def ou_lik1(params, cv, state_id, stats, T, n_samples):
         
         alpha, sigma, theta0, theta1, lambda1 = params[0], params[1], params[2], params[3:-1], params[-1]
 
-        # T = self.leaf_time
         a1 = 2.0*alpha
-        
-        # sigma1 = sigma**2
-        V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
 
+        V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
         theta = theta0*s1+theta1*(1-s1)
         print theta
@@ -530,7 +525,7 @@ class phyloHMM1(_BaseHMM):
     def _search_ancestor(self):
         path_vec = []        
         tree_mtx = self.tree_mtx
-        # n = tree_mtx.shape[0]
+        
         n = self.leaf_vec.shape[0]
         for i in range(0,n):
             leaf_idx = self.leaf_vec[i]
@@ -650,13 +645,10 @@ class phyloHMM1(_BaseHMM):
         for i in range(0,n1):
             covar_mtx[i,i] = values[self.leaf_vec[i],1] # variance
         
-        # sigma1 = sigma**2
-        # V1 = 1.0/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         V = covar_mtx.copy()
         theta = theta1[self.leaf_vec]
         mean_values1 = values[self.leaf_vec,0]
         obsmean = np.outer(self.stats['obs'][c], mean_values1)
-        # print covar_mtx, theta
 
         Sn_w = (self.stats['obs*obs.T'][c]
                 - obsmean - obsmean.T
@@ -804,7 +796,6 @@ class phyloHMM1(_BaseHMM):
         
         V = sigma**2/a1*np.exp(-a1*(T-cv))*(1-np.exp(-a1*cv))
         s1 = np.exp(-alpha*T)
-        # print theta0, theta1, theta
         theta = theta0*s1+theta1*(1-s1)
         c = state_id
         obsmean = np.outer(self.stats['obs'][c], theta)
@@ -876,7 +867,6 @@ class phyloHMM1(_BaseHMM):
         initial_guess = (a1*self.init_ou_params[state_id].copy() 
                         + a2*self.params_vec1[state_id].copy()
                         + (1-a1-a2)*random1)
-        # print "initial guess", initial_guess
         
         method_vec = ['L-BFGS-B','BFGS','SLSQP','Nelder-Mead','Newton-CG']
         id1 = 0
@@ -1174,7 +1164,6 @@ class phyloHMM(_BaseHMM):
         self.posteriors = np.ones((self.n_samples,n_components))    # for testing
 
         self.mean = np.random.rand(n_components, self.n_features)   # for testing
-        #self.mean = tf.placeholder(tf.float32, [n_components, self.n_features])
         self.Sn_w = np.zeros((self.n_components, self.n_features, self.n_features))
         self.stats = dict()
         self.counter = 0
@@ -1377,7 +1366,6 @@ class phyloHMM(_BaseHMM):
 
     # compute covariance matrix for a state
     def _compute_covariance_mtx_2(self, params, state_id):
-        #cv1 = self._covars_     # covariance matrix
         branch_dim, n_features = self.branch_dim, self.n_features
         cv = np.zeros((n_features,n_features))
         for i in range(1,branch_dim):
@@ -1555,7 +1543,7 @@ class phyloHMM(_BaseHMM):
 
         method_vec = ['L-BFGS-B','BFGS','SLSQP','COBYLA','Nelder-Mead','Newton-CG']
         id1 = 0
-        # con1 = {'type': 'ineq', 'fun': constraint1}
+
         con1 = {'type':'ineq', 'fun': lambda x: x-1e-07}
 
         res = minimize(self._brownian_lik,initial_guess,args = (state_id),
