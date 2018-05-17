@@ -1,5 +1,5 @@
 # Phylo-HMGP
-Continuous-trait Phylogenetic Hidden Markov Gaussian Process Model
+Continuous-trait Probabilistic Hidden Markov Gaussian Process Model
 
 Part of the code is developed based on modification or reusing the source code of the hmmlearn package https://github.com/hmmlearn/hmmlearn.
 
