@@ -468,7 +468,6 @@ class phyloHMM1(_BaseHMM):
             values[i,0] = values[p_idx[i],0]*beta1_exp[i] + theta1[i]*(1-beta1_exp[i])
             values[i,1] = ratio1[i]*(1-beta1_exp[i]**2) + values[p_idx[i],1]*(beta1_exp[i]**2)
 
-        # print values
         s1 = np.matmul(A2, beta1)
         idx = pair_list[:,-1]   # index of common ancestor
         s2 = values[idx,1]*np.exp(-s1)
