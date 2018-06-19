@@ -1457,8 +1457,7 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
 
     # features in the example input (sig.feature.1.txt) are in the order of species of
     # increased evolutionary distance from human (e.g., human, chimpanzee, orangutan, gibbon, and green monkey)
-    # therefore, the order of features is adjusted to be consistent with the left-to-right order of 
-    # the leaf nodes of the evolutionary tree
+    # therefore, the order of features is adjusted to be consistent with the left-to-right order of the leaf nodes of the evolutionary tree
     x2 = np.zeros(x1.shape)
     base_num = x1.shape[1]
     for i in range(0,base_num):
@@ -1535,7 +1534,7 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
 
     else:
         pass
-    
+
 if __name__ == '__main__':
 
     opts = parse_args()
