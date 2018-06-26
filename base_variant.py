@@ -482,10 +482,6 @@ class _BaseHMM(BaseEstimator):
 				self._accumulate_sufficient_statistics(
 					stats, X[i:j], framelogprob, posteriors, fwdlattice,
 					bwdlattice)
-				#if iter%3==0:
-				#    filename = "log1a/stats_iter_%d_%d"%(self.run_id,iter)
-				#    with open(filename,'a') as f_handle:
-				#        np.savetxt(f_handle,posteriors, fmt='%.4f', delimiter='\t')
 			
 			# filename = "log1/stats_iter_%d_%d"%(self.run_id,iter)
 			# np.savetxt(filename, posteriors, fmt='%.4f', delimiter='\t')
