@@ -56,5 +56,4 @@ Phylo-HMGP requires the following packages to be installed:
 - NumPy (tested on version 1.13.1)
 - SciPy (tested on version 0.19.0)
 
-You could install the Anaconda (avilable from https://www.continuum.io/downloads) for convenience, which provides a open souce collection of widely used data science packages including Python and numpy. PEP is tested using Anaconda 4.1.1.
-
+You could install the Anaconda (avilable from https://www.continuum.io/downloads) for convenience, which provides a open souce collection of widely used data science packages including Python and numpy. 
