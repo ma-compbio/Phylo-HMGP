@@ -47,6 +47,23 @@ For the provided example, the input includes four files: edge.1.txt, branch_leng
 
 - sig.lenVec.1.txt includes the lengths of the fragments of the continuous genome regions in sig.feature.1.txt. Each row is a integer showing the fragment length. Each fragment is a segment of continous genome regions. The segments are indexed by the ascending order of their coordinates in the reference genome. The sum of the values in sig.lenVec.1.txt is equal to the number of rows in sig.feature.1.txt.
 
+Description of the estimated parameters:
+
+Each row in the output file of the estimated parameters represents the estimated parameters for each state.
+
+For the studied species and their ancestors, we added one remote root node to the phylogenetic tree. Suppose are N nodes of the phylogenetic tree, including the remote root node, internal nodes, and leaf nodes. There are (3N-1) parameters. Specially, there are N nodes and (N-1) branches. Each node has an optimal value (N parameters). Each branch has two parameters (2*(N-1) parameters): selection strength and Brownian motion intensity. We also assign a variance as a parameter to the assumed Gaussian distribution of the root node. The mean of the assumed Gaussian distribution of the root node is its optimal value. Therefore, the number of parameters is 3N-1, which correspond to the (3N-1) columns in the output parameter estimation file.
+
+The first column is the estimated variance of the remote root node.
+
+The 2nd to N-th columns represent the estimated selection strength along each branch.
+
+The (N+1)-th to (2N-1)-th columns represent the estimated Brownian motion intensity along each branch.
+
+The 2N-th to (3N-1)-th columns represent the estimated optimal values of each node.
+
+The nodes and branches are labeled in the order of upper-down, left-right, and the index starts from 0.
+
+The parameters selection strength and Brownian motion intensity along each branch are transformed parameters, with the branch length included. 
 
 ************************************************************************************
 # Required pre-installed packages
