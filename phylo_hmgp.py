@@ -1412,7 +1412,8 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
         sort_states,run_id1,cons_param,method_mode,initial_mode,initial_weight,initial_weight1,initial_magnitude, version):
     
     # load the edge list
-    filename2 = "input_example/edge.1.txt"    
+    root_path = str(root_path)
+    filename2 = "%s/edge.1.txt"%(root_path)  
     if(os.path.exists(filename2)==True):
         f = open(filename2, 'r')
         print("edge list loaded")
@@ -1420,7 +1421,7 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
         print edge_list
 
     # load branch length file if provided
-    filename2 = "input_example/branch_length.1.txt"
+    filename2 = "%s/branch_length.1.txt"%(root_path)
     if(os.path.exists(filename2)==True):
         f = open(filename2, 'r')
         print("branch list loaded")
@@ -1442,12 +1443,12 @@ def run(hmm_estimate,num_states,filename,length_vec,root_path,multiple,species_n
     print n_components1, method_mode, cons_param
 
     # load the features
-    filename1 = "input_example/sig.feature.1.txt" # input
+    filename1 = "%s/sig.feature.1.txt"%(root_path) # input
     if(os.path.exists(filename1)==False):
         print "there is no such file %s"%(filename1)
         return
 
-    filename2 = "input_example/sig.lenVec.1.txt"  # input
+    filename2 = "%s/sig.lenVec.1.txt"%(root_path) # input
     if(os.path.exists(filename2)==False):
         print "there is no such file %s"%(filename2)
         return
