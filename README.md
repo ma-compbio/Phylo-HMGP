@@ -73,7 +73,7 @@ Phylo-HMGP requires the following packages to be installed:
 You could install the Anaconda (avilable from https://www.continuum.io/downloads) for convenience, which provides a open souce collection of widely used data science packages including Python and numpy. 
 
 ************************************************************************************
-If you would like to use Phylo-HMGP, please consider the following citation:
+If you would like to cite Phylo-HMGP, please consider the following citation:
 
 Yang Yang, Quanquan Gu, Yang Zhang, Takayo Sasaki, Julianna Crivello, Rachel J. O'Neill, David M. Gilbert, Jian Ma. (2018). "Continuous-trait probabilistic model for comparing multi-species functional genomic data". Cell Systems 7(2):208-218.e11.
 
